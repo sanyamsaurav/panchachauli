@@ -1,7 +1,7 @@
 import { withAuth } from 'next-auth/middleware';
 import { ROLES } from '@/constants';
 
-export default withAuth({
+const authMiddleware = withAuth({
   pages: {
     signIn: '/admin/login',
     error: '/admin/login',
@@ -13,6 +13,9 @@ export default withAuth({
   },
   secret: process.env.NEXTAUTH_SECRET ?? process.env.JWT_SECRET,
 });
+
+export const proxy = authMiddleware;
+export default authMiddleware;
 
 export const config = {
   matcher: ['/admin', '/admin/((?!login).*)'],
