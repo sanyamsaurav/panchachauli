@@ -8,17 +8,6 @@ import dns from "dns";
 dns.setDefaultResultOrder("ipv4first");
 
 /**
- * Use ENV variable
- */
-const MONGODB_URI = process.env.MONGODB_URI as string;
-// console.log(MONGODB_URI,"MONGODB_URIMONGODB_URIMONGODB_URI")
-if (!MONGODB_URI) {
-  throw new Error(
-    "❌ Please define the MONGODB_URI environment variable inside .env.local"
-  );
-}
-
-/**
  * Global cache (prevents multiple connections during hot reload)
  */
 interface MongooseCache {
@@ -45,6 +34,13 @@ async function connectDB(): Promise<typeof mongoose> {
   // Already connected
   if (cached.conn) {
     return cached.conn;
+  }
+
+  const MONGODB_URI = process.env.MONGODB_URI;
+  if (!MONGODB_URI) {
+    throw new Error(
+      "❌ Please define the MONGODB_URI environment variable inside .env.local"
+    );
   }
 
   // Create connection promise once
