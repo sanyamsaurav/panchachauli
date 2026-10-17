@@ -9,6 +9,7 @@ export interface GetContactsParams {
   limit?: number;
   status?: 'new' | 'read' | 'replied' | 'archived';
   email?: string;
+  search?: string;
 }
 
 export interface CreateContactData {
@@ -23,7 +24,7 @@ export interface CreateContactData {
  */
 export class ContactService {
   /**
-   * Get all contacts with pagination
+   * Get all contacts with pagination and search
    */
   static async getContacts(params: GetContactsParams = {}): Promise<PaginatedResponse<IContact>> {
     await connectDB();
@@ -33,6 +34,7 @@ export class ContactService {
       limit = PAGINATION.DEFAULT_LIMIT,
       status,
       email,
+      search,
     } = params;
 
     const skip = (page - 1) * limit;
@@ -44,6 +46,16 @@ export class ContactService {
 
     if (email) {
       query.email = email.toLowerCase().trim();
+    }
+
+    if (search && search.trim()) {
+      const searchRegex = { $regex: search.trim(), $options: 'i' };
+      query.$or = [
+        { fullName: searchRegex },
+        { mobileNumber: searchRegex },
+        { email: searchRegex },
+        { message: searchRegex },
+      ];
     }
 
     const contacts = await Contact.find(query)
@@ -130,6 +142,35 @@ export class ContactService {
 
     const count = await Contact.countDocuments({ status: 'new' });
     return count;
+  }
+
+  /**
+   * Get contact statistics by status
+   */
+  static async getContactsStats(): Promise<{
+    total: number;
+    new: number;
+    read: number;
+    replied: number;
+    archived: number;
+  }> {
+    await connectDB();
+
+    const [total, newCount, readCount, repliedCount, archivedCount] = await Promise.all([
+      Contact.countDocuments(),
+      Contact.countDocuments({ status: 'new' }),
+      Contact.countDocuments({ status: 'read' }),
+      Contact.countDocuments({ status: 'replied' }),
+      Contact.countDocuments({ status: 'archived' }),
+    ]);
+
+    return {
+      total,
+      new: newCount,
+      read: readCount,
+      replied: repliedCount,
+      archived: archivedCount,
+    };
   }
 
   /**

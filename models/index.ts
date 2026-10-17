@@ -8,3 +8,4 @@ export { default as Blog } from './Blog';
 export { default as Experience } from './Experience';
 export { default as SchoolAspirant } from './SchoolAspirant';
 export { default as Product } from './Product';
+export { default as NewsletterSubscriber } from './NewsletterSubscriber';

@@ -9,6 +9,7 @@ const adminRoutes = {
   experiences: (id?: string) => (id ? `${BASE}/admin/experiences/${id}` : `${BASE}/admin/experiences`),
   experienceBySlug: (slug: string) => `${BASE}/admin/experiences/slug/${slug}`,
   upload: () => `${BASE}/admin/upload`,
+  dashboard: () => `${BASE}/admin/dashboard`,
   contacts: (id?: string) => (id ? `${BASE}/admin/contacts/${id}` : `${BASE}/admin/contacts`),
   school: (id?: string) => (id ? `${BASE}/admin/school/${id}` : `${BASE}/admin/school`),
   products: (id?: string) => (id ? `${BASE}/admin/products/${id}` : `${BASE}/admin/products`),

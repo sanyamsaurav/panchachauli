@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Mountain, Search, Plus, Calendar, Pencil, Eye, Trash2 } from "lucide-react";
 import { Input, Button, toast, Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/common";
 import type { IExperience } from "@/types/models";
@@ -77,12 +78,12 @@ const Page = () => {
             <p className="text-gray-600">Manage your experiences and adventures</p>
           </div>
         </div>
-        <a href="/admin/experiences/new">
+        <Link href="/admin/experiences/new">
           <Button variant="primary" className="whitespace-nowrap bg-black hover:bg-gray-800 rounded-none">
             <Plus className="mr-2 h-4 w-4" />
             New Experience
           </Button>
-        </a>
+        </Link>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">

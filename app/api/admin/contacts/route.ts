@@ -25,12 +25,14 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       | 'replied'
       | 'archived') || undefined;
     const email = searchParams.get('email') || undefined;
+    const search = searchParams.get('search') || undefined;
 
     const result = await ContactService.getContacts({
       page,
       limit,
       status,
       email,
+      search,
     });
 
     return jsonResponse(result, HTTP_STATUS.OK);

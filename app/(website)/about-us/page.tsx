@@ -36,7 +36,7 @@ export default function OurTeam() {
           Our Story
         </h2>
         <p className="text-gray-600 text-lg leading-relaxed">
-          Fly {cityName} is a {isPanchachuli ? "Himalayan adventure and paragliding platform rooted in the Panchachuli region of Uttarakhand" : `paragliding-focused adventure platform based in ${cityName}`}. We're here to make mountain flying and outdoor
+          Fly {cityName} is a {isPanchachuli ? "Himalayan adventure and paragliding platform rooted in the Panchachuli region of Uttarakhand" : `paragliding-focused adventure platform based in ${cityName}`}. We&apos;re here to make mountain flying and outdoor
           experiences safe, accessible, and unforgettable—guided by certified pilots and
           local experts who know these valleys, peaks, and weather windows inside out.
         </p>

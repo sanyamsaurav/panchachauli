@@ -55,8 +55,8 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       }
     };
 
-    const textareaId =
-      props.id || `textarea-${Math.random().toString(36).substr(2, 9)}`;
+    const generatedId = React.useId();
+    const textareaId = props.id || generatedId;
     const hasError = !!error;
 
     return (

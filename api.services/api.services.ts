@@ -220,20 +220,34 @@ export interface AdminContactsParams {
   limit?: number;
   status?: 'new' | 'read' | 'replied' | 'archived';
   email?: string;
+  search?: string;
 }
 
 export const getAdminContacts = async (
   params: AdminContactsParams = {}
 ): Promise<PaginatedResponse<IContact>> => {
-  const { page, limit, status, email } = params;
+  const { page, limit, status, email, search } = params;
   const response = await axiosInterceptor.get<PaginatedResponse<IContact>>(adminRoutes.contacts(), {
     params: {
       ...(page != null && { page }),
       ...(limit != null && { limit }),
       ...(status && { status }),
       ...(email && { email }),
+      ...(search && { search }),
     },
   });
+  return response.data;
+};
+
+export const updateAdminContactStatus = async (
+  id: string,
+  status: 'new' | 'read' | 'replied' | 'archived'
+) => {
+  const response = await axiosInterceptor.patch<{
+    success: boolean;
+    message?: string;
+    data: IContact;
+  }>(adminRoutes.contacts(id), { status });
   return response.data;
 };
 
@@ -441,3 +455,33 @@ export const getPublicSettings = async () => {
   );
   return response.data;
 };
+
+// Admin Dashboard API
+export interface AdminDashboardData {
+  totalBlogs: number;
+  totalExperiences: number;
+  totalProducts: number;
+  totalContacts: number;
+  newContactsCount: number;
+  contactsStats: {
+    total: number;
+    new: number;
+    read: number;
+    replied: number;
+    archived: number;
+  };
+  recentContacts: IContact[];
+  totalSchoolAspirants: number;
+  newSchoolCount: number;
+  recentSchoolAspirants: ISchoolAspirant[];
+  totalSubscribers: number;
+}
+
+export const getAdminDashboard = async () => {
+  const response = await axiosInterceptor.get<{
+    success: boolean;
+    data: AdminDashboardData;
+  }>(adminRoutes.dashboard());
+  return response.data;
+};
+

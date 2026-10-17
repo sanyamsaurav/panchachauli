@@ -1,6 +1,7 @@
 
 'use client'
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { FileText, Search, Plus, Calendar, Tag, Pencil, Eye, Trash2 } from "lucide-react";
 import { Input, Button, toast, Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/common";
 import type { IBlog } from "@/types/models";
@@ -78,12 +79,12 @@ const Page = () => {
             <p className="text-gray-600">Manage your blog posts and metadata</p>
           </div>
         </div>
-        <a href="/admin/blogs/new">
+        <Link href="/admin/blogs/new">
           <Button variant="primary" className="whitespace-nowrap">
             <Plus className="mr-2 h-4 w-4" />
             New Blog
           </Button>
-        </a>
+        </Link>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">

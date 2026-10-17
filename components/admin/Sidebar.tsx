@@ -3,15 +3,12 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import {
   LayoutDashboard,
-  Users,
   Settings,
   FileText,
   LogOut,
-  UserPlus,
-  DollarSign,
   Activity,
   Mail,
   Newspaper,
@@ -33,22 +30,49 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { title: "Customer Enquiries", href: "/admin/contacts", icon: Mail },
+  { title: "School Inquiries", href: "/admin/school", icon: GraduationCap },
   { title: "Products & Gear", href: "/admin/products", icon: FileText },
   { title: "Blogs", href: "/admin/blogs", icon: FileText },
   { title: "Experiences", href: "/admin/experiences", icon: Activity },
-  { title: "School", href: "/admin/school", icon: GraduationCap },
-  { title: "Contacts", href: "/admin/contacts", icon: Mail },
   { title: "Newsletter", href: "/admin/newsletter", icon: Newspaper },
   { title: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export default function AdminSidebar() {
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const [unreadEnquiries, setUnreadEnquiries] = React.useState<number>(0);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch("/api/admin/contacts?limit=1&status=new");
+        if (res.ok) {
+          const json = await res.json();
+          if (isMounted && typeof json?.pagination?.total === "number") {
+            setUnreadEnquiries(json.pagination.total);
+          }
+        }
+      } catch {
+        // silent fallback
+      }
+    };
+
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 30000); // Check every 30 seconds
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [pathname]);
 
   const isActive = (href: string) => {
     if (href === "/admin") {
       return pathname === "/admin";
+    }
+    if (href === "/admin/contacts") {
+      return pathname === "/admin/contacts" || pathname?.startsWith("/admin/enquiries");
     }
     return pathname?.startsWith(href);
   };
@@ -73,6 +97,11 @@ export default function AdminSidebar() {
         <nav className="space-y-1">
           {menuItems.map((item) => {
             const active = isActive(item.href);
+            const isEnquiries = item.href === "/admin/contacts";
+            const badgeText = isEnquiries && unreadEnquiries > 0
+              ? `${unreadEnquiries} New`
+              : item.badge;
+
             return (
               <Link
                 key={item.href}
@@ -80,15 +109,26 @@ export default function AdminSidebar() {
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-all duration-200",
                   active
-                    ? "bg-white text-black"
+                    ? "bg-white text-black font-semibold"
                     : "text-gray-300 hover:bg-gray-900 hover:text-white"
                 )}
               >
                 <item.icon className="h-5 w-5" />
-                <span>{item.title}</span>
-                {item.badge && (
-                  <span className="ml-auto bg-black text-white px-2 py-0.5 text-xs font-semibold border border-gray-700">
-                    {item.badge}
+                <span className="flex-1">{item.title}</span>
+                {badgeText && (
+                  <span
+                    className={cn(
+                      "px-2 py-0.5 text-xs font-semibold rounded-full border",
+                      isEnquiries && unreadEnquiries > 0
+                        ? active
+                          ? "bg-amber-500 text-white border-amber-600 animate-pulse"
+                          : "bg-amber-400/20 text-amber-300 border-amber-500/40 animate-pulse"
+                        : active
+                        ? "bg-black text-white border-gray-800"
+                        : "bg-gray-800 text-gray-200 border-gray-700"
+                    )}
+                  >
+                    {badgeText}
                   </span>
                 )}
               </Link>
